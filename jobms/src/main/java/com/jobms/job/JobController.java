@@ -36,10 +36,10 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Job> getJobById(@PathVariable Long id){
-        Job job = jobService.getJobById(id);
-        if (job != null){
-            return new ResponseEntity<>(job, HttpStatus.OK);
+    public ResponseEntity<JobCompanyDTO> getJobById(@PathVariable Long id){
+        JobCompanyDTO jobCompanyDTO = jobService.getJobById(id);
+        if (jobCompanyDTO != null){
+            return new ResponseEntity<>(jobCompanyDTO, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -54,12 +54,12 @@ public class JobController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateJob(@PathVariable Long id, @RequestBody Job updatedJob){
-        boolean updated = jobService.updateJob(id,updatedJob);
+    public ResponseEntity<JobCompanyDTO> updateJob(@PathVariable Long id, @RequestBody Job updatedJob){
+        JobCompanyDTO jobCompanyDTO = jobService.updateJob(id,updatedJob);
 
-        if (updated){
-            return new ResponseEntity<>("Job updated successfully",HttpStatus.OK);
+        if (jobCompanyDTO != null){
+            return new ResponseEntity<>(jobCompanyDTO,HttpStatus.OK);
         }
-        return new ResponseEntity<>("Can't found any job",HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

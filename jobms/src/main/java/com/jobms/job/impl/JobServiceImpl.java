@@ -6,6 +6,7 @@ import com.jobms.job.JobRepository;
 import com.jobms.job.JobService;
 import com.jobms.job.dto.JobCompanyDTO;
 import com.jobms.job.external.Company;
+import com.jobms.job.mapper.JobMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -21,8 +22,11 @@ public class JobServiceImpl implements JobService {
 
 //    private List<Job> jobs = new ArrayList<>();
     @Autowired
-JobRepository jobRepository;
+    JobRepository jobRepository;
 //    private Long nextId = 1l;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @Override
     public List<JobCompanyDTO> findAll() {
@@ -58,11 +62,13 @@ JobRepository jobRepository;
     }
 
     private JobCompanyDTO convertToDTO(Job job){
-        JobCompanyDTO jobCompanyDTO = new JobCompanyDTO();
-        jobCompanyDTO.setJob(job);
-        RestTemplate restTemplate = new RestTemplate();
-        Company company = restTemplate.getForObject("http://localhost:8082/company/"+job.getCompanyId(),Company.class);
+//        JobCompanyDTO jobCompanyDTO = new JobCompanyDTO();
+//        jobCompanyDTO.setJob(job);
+//        RestTemplate restTemplate = new RestTemplate();
 
+        Company company = restTemplate.getForObject("http://COMPANYMS:8082/company/"+job.getCompanyId(),Company.class);
+
+        JobCompanyDTO jobCompanyDTO = JobMapper.mapToJobCompanyDTO(job,company);
         jobCompanyDTO.setCompany(company);
         return jobCompanyDTO;
     }
@@ -76,7 +82,7 @@ JobRepository jobRepository;
     }
 
     @Override
-    public Job getJobById(Long id) {
+    public JobCompanyDTO getJobById(Long id) {
 //        for (Job job : jobs){
 //            if (job.getId().equals(id)){
 //                return job;
@@ -84,7 +90,9 @@ JobRepository jobRepository;
 //        }
 //        return null;
 
-        return jobRepository.findById(id).orElse(null);
+//        return jobRepository.findById(id).orElse(null);
+        Job job = jobRepository.findById(id).orElse(null);
+        return convertToDTO(job);
     }
 
     @Override
@@ -107,7 +115,7 @@ JobRepository jobRepository;
     }
 
     @Override
-    public boolean updateJob(Long id, Job updatedJob) {
+    public JobCompanyDTO updateJob(Long id, Job updatedJob) {
 //        Iterator<Job> iterator = jobs.iterator();
 //        while(iterator.hasNext()){
 //            Job job = iterator.next();
@@ -133,8 +141,8 @@ JobRepository jobRepository;
             job.setLocation(updatedJob.getLocation());
 
             jobRepository.save(job);
-            return true;
+            return convertToDTO(job);
         }
-        return false;
+        return null;
     }
 }
