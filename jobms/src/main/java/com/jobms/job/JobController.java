@@ -1,5 +1,6 @@
 package com.jobms.job;
 
+import com.jobms.job.dto.JobCompanyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class JobController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Job>> findAll(){
+    public ResponseEntity<List<JobCompanyDTO>> findAll(){
         return ResponseEntity.ok(jobService.findAll());
     }
 
@@ -29,9 +30,9 @@ public class JobController {
 //    @RequestMapping(value = "/jobs/{id}, method = RequestMethod.PUT)
     @RequestMapping(method = RequestMethod.POST)
 //    @PostMapping("/jobs")
-    public ResponseEntity<String> createJob(@RequestBody Job job){
+    public ResponseEntity<Job> createJob(@RequestBody Job job){
         jobService.createJob(job);
-        return new ResponseEntity<>("Job added successfully",HttpStatus.CREATED);
+        return new ResponseEntity<>(job,HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")

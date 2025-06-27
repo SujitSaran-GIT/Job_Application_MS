@@ -4,12 +4,17 @@ package com.jobms.job.impl;
 import com.jobms.job.Job;
 import com.jobms.job.JobRepository;
 import com.jobms.job.JobService;
+import com.jobms.job.dto.JobCompanyDTO;
+import com.jobms.job.external.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JobServiceImpl implements JobService {
@@ -20,10 +25,48 @@ JobRepository jobRepository;
 //    private Long nextId = 1l;
 
     @Override
-    public List<Job> findAll() {
-//        return jobs;
-        return jobRepository.findAll();
+    public List<JobCompanyDTO> findAll() {
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//        try {
+//            String company = restTemplate.getForObject("http://localhost:8082/company/1", String.class);
+//
+//            if (company != null) {
+//                System.out.println("Company ID: " + company);
+//            } else {
+//                System.out.println("Company is null. The external service might be down or returned no content.");
+//            }
+//        } catch (Exception e) {
+//            System.out.println("Failed to fetch company: " + e.getMessage());
+//        }
+
+        List<Job> jobs = jobRepository.findAll();
+        List<JobCompanyDTO> jobCompanyDTOS = new ArrayList<>();
+
+
+
+//        for(Job job: jobs){
+//            JobCompanyDTO jobCompanyDTO = new JobCompanyDTO();
+//            jobCompanyDTO.setJob(job);
+//            Company company = restTemplate.getForObject("http://localhost:8082/company/"+job.getCompanyId(),Company.class);
+//
+//            jobCompanyDTO.setCompany(company);
+//            jobCompanyDTOS.add(jobCompanyDTO);
+//        }
+
+        return jobs.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
+
+    private JobCompanyDTO convertToDTO(Job job){
+        JobCompanyDTO jobCompanyDTO = new JobCompanyDTO();
+        jobCompanyDTO.setJob(job);
+        RestTemplate restTemplate = new RestTemplate();
+        Company company = restTemplate.getForObject("http://localhost:8082/company/"+job.getCompanyId(),Company.class);
+
+        jobCompanyDTO.setCompany(company);
+        return jobCompanyDTO;
+    }
+
 
     @Override
     public void createJob(Job job) {
