@@ -1,6 +1,6 @@
 package com.jobms.job;
 
-import com.jobms.job.dto.JobCompanyDTO;
+import com.jobms.job.dto.JobDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class JobController {
     }
 
     @GetMapping
-    public ResponseEntity<List<JobCompanyDTO>> findAll(){
+    public ResponseEntity<List<JobDTO>> findAll(){
         return ResponseEntity.ok(jobService.findAll());
     }
 
@@ -36,8 +36,8 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JobCompanyDTO> getJobById(@PathVariable Long id){
-        JobCompanyDTO jobCompanyDTO = jobService.getJobById(id);
+    public ResponseEntity<JobDTO> getJobById(@PathVariable Long id){
+        JobDTO jobCompanyDTO = jobService.getJobById(id);
         if (jobCompanyDTO != null){
             return new ResponseEntity<>(jobCompanyDTO, HttpStatus.OK);
         }
@@ -54,8 +54,8 @@ public class JobController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobCompanyDTO> updateJob(@PathVariable Long id, @RequestBody Job updatedJob){
-        JobCompanyDTO jobCompanyDTO = jobService.updateJob(id,updatedJob);
+    public ResponseEntity<JobDTO> updateJob(@PathVariable Long id, @RequestBody Job updatedJob){
+        JobDTO jobCompanyDTO = jobService.updateJob(id,updatedJob);
 
         if (jobCompanyDTO != null){
             return new ResponseEntity<>(jobCompanyDTO,HttpStatus.OK);
