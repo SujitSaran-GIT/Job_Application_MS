@@ -4,6 +4,8 @@ package com.jobms.job.impl;
 import com.jobms.job.Job;
 import com.jobms.job.JobRepository;
 import com.jobms.job.JobService;
+import com.jobms.job.clients.CompanyClient;
+import com.jobms.job.clients.ReviewClient;
 import com.jobms.job.dto.JobDTO;
 import com.jobms.job.external.Company;
 import com.jobms.job.external.Review;
@@ -31,6 +33,15 @@ public class JobServiceImpl implements JobService {
 
     @Autowired
     RestTemplate restTemplate;
+
+    private CompanyClient companyClient;
+    private ReviewClient reviewClient;
+
+    public JobServiceImpl(CompanyClient companyClient, JobRepository jobRepository, ReviewClient reviewClient) {
+        this.companyClient = companyClient;
+        this.jobRepository = jobRepository;
+        this.reviewClient = reviewClient;
+    }
 
     @Override
     public List<JobDTO> findAll() {
@@ -70,16 +81,18 @@ public class JobServiceImpl implements JobService {
 //        jobCompanyDTO.setJob(job);
 //        RestTemplate restTemplate = new RestTemplate();
 
-        Company company = restTemplate.getForObject("http://COMPANYMS:8082/company/"+job.getCompanyId(),Company.class);
+//        Company company = restTemplate.getForObject("http://COMPANYMS:8082/company/"+job.getCompanyId(),Company.class);
+        Company company = companyClient.getCompany(job.getCompanyId());
+//        ResponseEntity<List<Review>> responseEntity = restTemplate.exchange(
+//                "http://REVIEWMS:8083/reviews?companyId=" + job.getCompanyId(),
+//                HttpMethod.GET,
+//                null,
+//                new ParameterizedTypeReference<List<Review>>() {
+//        });
 
-        ResponseEntity<List<Review>> responseEntity = restTemplate.exchange(
-                "http://REVIEWMS:8083/reviews?companyId=" + job.getCompanyId(),
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Review>>() {
-        });
+        List<Review> reviews = reviewClient.getReviews(job.getCompanyId());
 
-        List<Review> reviews = responseEntity.getBody();
+//        List<Review> reviews = responseEntity.getBody();
         JobDTO jobCompanyDTO = JobMapper.mapToJobCompanyDTO(job,company,reviews);
 //        jobCompanyDTO.setCompany(company);
         return jobCompanyDTO;
