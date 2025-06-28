@@ -82,7 +82,9 @@ public class JobServiceImpl implements JobService {
 //        RestTemplate restTemplate = new RestTemplate();
 
 //        Company company = restTemplate.getForObject("http://COMPANYMS:8082/company/"+job.getCompanyId(),Company.class);
+
         Company company = companyClient.getCompany(job.getCompanyId());
+
 //        ResponseEntity<List<Review>> responseEntity = restTemplate.exchange(
 //                "http://REVIEWMS:8083/reviews?companyId=" + job.getCompanyId(),
 //                HttpMethod.GET,
@@ -90,9 +92,8 @@ public class JobServiceImpl implements JobService {
 //                new ParameterizedTypeReference<List<Review>>() {
 //        });
 
-        List<Review> reviews = reviewClient.getReviews(job.getCompanyId());
-
 //        List<Review> reviews = responseEntity.getBody();
+        List<Review> reviews = reviewClient.getReviews(job.getCompanyId());
         JobDTO jobCompanyDTO = JobMapper.mapToJobCompanyDTO(job,company,reviews);
 //        jobCompanyDTO.setCompany(company);
         return jobCompanyDTO;
